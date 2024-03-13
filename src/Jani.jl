@@ -1,5 +1,10 @@
 module Jani
 
-# Write your package code here.
+    include("nn.jl")
+    include("aev.jl")
+    include("models.jl")
+    include("neurochem/neurochem.jl")
+    include("neurochem/parse_resources.jl")
+    include("neurochem/trainer.jl")
 
 end
