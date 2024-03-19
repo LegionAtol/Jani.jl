@@ -61,8 +61,9 @@ end
 function _from_neurochem_resources(info_file_path, periodic_table_index=false)
     const_file, sae_file, ensemble_prefix, ensemble_size = parse_neurochem_resources(info_file_path)
     
-    consts = Constants(const_file)#=
-    species_converter = SpeciesConverter(consts.species) # in nn.jl #Is it better to use a Module for nn.jl?
+    consts = Constants(const_file)
+    species_converter = SpeciesConverter(consts.species)
+    #=
     aev_computer = AEVComputer(consts...)
     energy_shifter, sae_dict = load_sae(sae_file, return_dict=true)
     species_to_tensor = consts.species_to_tensor
