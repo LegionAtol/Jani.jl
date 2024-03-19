@@ -23,7 +23,7 @@ function parse_neurochem_resources(info_file_path::AbstractString)
         # is tried as an alternative
         resource_path = local_dir
     else
-        # if all else fails files are downloaded and extracted ONLY if a
+        # if all else fails files are downloaded and extracted only if a
         # correct info file path is passed, otherwise an error is raised
         if info_file_path in SUPPORTED_INFO_FILES
             repo_name = "ani-model-zoo"
