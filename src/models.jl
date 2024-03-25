@@ -1,3 +1,5 @@
+using OrderedCollections: OrderedDict
+
 mutable struct SpeciesEnergiesQBC
     species::Array
     energies::Array
@@ -63,23 +65,25 @@ function _from_neurochem_resources(info_file_path, periodic_table_index=false)
     
     consts = Constants(const_file)
     species_converter = SpeciesConverter(consts.species)
+
+    kwargs = OrderedDict{Symbol,Any}()
+    for (key, value) in pairs(consts)
+        kwargs[key] = value
+    end
+    aev_computer = AEVComputer(;kwargs...)
+
     #=
-    aev_computer = AEVComputer(consts...)
-    energy_shifter, sae_dict = load_sae(sae_file, return_dict=true)
+    energy_shifter, sae_dict = load_sae()
     species_to_tensor = consts.species_to_tensor
 
-    network_dir = joinpath("$ensemble_prefix$model_index", "networks")
-    neural_networks = load_model(consts.species, network_dir)
+    network_dir = joinpath()
+    neural_networks = load_model()
 
     return BuiltinModel(species_converter, aev_computer, neural_networks, energy_shifter, species_to_tensor, consts, sae_dict, periodic_table_index, consts.species)
     =#
 end
 
 function Base.getindex(self::BuiltinModel, index::Int)
-    #return BuiltinModel(self.species_converter, self.aev_computer,
-    #                   self.neural_networks[index], self.energy_shifter,
-    #                   self._species_to_tensor, self.consts, self.sae_dict,
-    #                   self.periodic_table_index)
 end
 
 function members_energies(self::BuiltinModel, species_coordinates::Tuple{Array, Array}, cell::Union{Array, Nothing}=nothing, pbc::Union{Array, Nothing}=nothing)

@@ -16,7 +16,7 @@ mutable struct Constants
     species_to_tensor::ChemicalSymbolsToInts
 
     function Constants(filename::String)
-        self = new(filename)
+        c = new(filename)
         f = open(filename)
         for i in eachline(f)
             try
@@ -24,7 +24,7 @@ mutable struct Constants
                 name = strip(line[1])
                 value = strip(line[2])
                 if name in ["Rcr", "Rca"]
-                    setfield!(self, Symbol(name), parse(Float64, value))
+                    setfield!(c, Symbol(name), parse(Float64, value))
                 elseif name in ["EtaR", "ShfR", "EtaA", "Zeta", "ShfA", "ShfZ"]
                     value = replace(replace(value, '[' => ""), ']' => "")
                     # Split string only if it contains a comma
@@ -42,11 +42,11 @@ mutable struct Constants
                         "ShfA" => :ShfA
                     )
                     if haskey(variable_map, name)
-                        setfield!(self, variable_map[name], value)
+                        setfield!(c, variable_map[name], value)
                     end
                 elseif name == "Atyp"
                     value = [replace(x, r"[\[\]]" => "") for x in split(value, ',')]
-                    self.species = value
+                    c.species = value
                 end
             catch e
                 throw(ArgumentError("unable to parse const file: $e"))
@@ -54,14 +54,19 @@ mutable struct Constants
         end
         close(f)
 
-        self.num_species = length(self.species)
-        self.species_to_tensor = ChemicalSymbolsToInts(self.species)
-        return self
+        c.num_species = length(c.species)
+        c.species_to_tensor = ChemicalSymbolsToInts(c.species)
+        return c
     end
 end
 
-#TODO: function __iter__(self),  __getitem__(self, item)
-Base.length(self::Constants) = return 8
+Base.length(c::Constants) = return 9
+
+Base.keys(c::Constants) = [:Rcr, :Rca, :EtaR, :ShfR, :EtaA, :Zeta, :ShfA, :ShfZ, :num_species]
+
+Base.values(c::Constants) = [getfield(c, key) for key in keys(c)]
+
+Base.pairs(c::Constants) = [key => getfield(c, key) for key in keys(c)]
 
 function load_sae(filename::String, return_dict::Bool=false)
 end

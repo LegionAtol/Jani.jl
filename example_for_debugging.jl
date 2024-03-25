@@ -8,4 +8,4 @@ import Jani
 
 device = has_cuda() ? CuDevice(0) : nothing
 
-model = Jani.ANI2x(true) |> to(device)
+model = Jani.ANI2x(true)
