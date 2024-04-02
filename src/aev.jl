@@ -8,35 +8,35 @@ function compute_shifts(cell::Array, pbc::Array{Bool}, cutoff::Float64)
     reciprocal_cell = inv(transpose(cell))
     inv_distances = vec(norm.(eachrow(reciprocal_cell), 2))
     num_repeats = ceil.(Int, cutoff .* inv_distances)
-    num_repeats = ifelse.(pbc, num_repeats, zeros(Int, size(num_repeats)))
+    num_repeats = ifelse.(pbc, num_repeats, zeros(Int, length(num_repeats)))
     r1 = 1:num_repeats[1]
     r2 = 1:num_repeats[2]
     r3 = 1:num_repeats[3]
     o = 0:0
 
-    shifts = vcat(
-    cartesian_product(r1, r2, r3),
-    cartesian_product(r1, r2, o),
-    cartesian_product(r1, r2, -r3),
-    cartesian_product(r1, o, r3),
-    cartesian_product(r1, o, o),
-    cartesian_product(r1, o, -r3),
-    cartesian_product(r1, -r2, r3),
-    cartesian_product(r1, -r2, o),
-    cartesian_product(r1, -r2, -r3),
-    cartesian_product(o, r2, r3),
-    cartesian_product(o, r2, o),
-    cartesian_product(o, r2, -r3),
-    cartesian_product(o, o, r3)
-    )
+    # Generating cartesian products
+    products = [
+        [(x, y, z) for x in r1, y in r2, z in r3],
+        [(x, y, z) for x in r1, y in r2, z in o],
+        [(x, y, z) for x in r1, y in r2, z in -r3],
+        [(x, y, z) for x in r1, y in o, z in r3],
+        [(x, y, z) for x in r1, y in o, z in o],
+        [(x, y, z) for x in r1, y in o, z in -r3],
+        [(x, y, z) for x in r1, y in -r2, z in r3],
+        [(x, y, z) for x in r1, y in -r2, z in o],
+        [(x, y, z) for x in r1, y in -r2, z in -r3],
+        [(x, y, z) for x in o, y in r2, z in r3],
+        [(x, y, z) for x in o, y in r2, z in o],
+        [(x, y, z) for x in o, y in r2, z in -r3],
+        [(x, y, z) for x in o, y in o, z in r3]
+    ]
+    # Flattening the array of arrays into a single array of tuples
+    shifts = vcat(products...)
+
     return shifts
 end
 
-function cartesian_product(a, b, c)
-    return [(x, y, z) for x in a, y in b, z in c]
-end
-
-function triu_index(num_species::Int)
+function compute_triu_index(num_species::Int)
     ret = zeros(Int64, num_species, num_species)
     count = 0
     for i in 1:num_species, j in i:num_species
@@ -104,13 +104,13 @@ mutable struct AEVComputer
         aev_length = radial_length + angular_length
         sizes = (num_species, radial_sublength, radial_length, angular_sublength, angular_length)
 
-        triu_index = gpu(triu_index(num_species))
+        triu_index = gpu(compute_triu_index(num_species))
 
         # Set up default cell and compute default shifts.
         # These values are used when cell and pbc switch are not given.
         cutoff = max(Rcr, Rca)
         default_cell = gpu(Matrix{Float64}(I, 3, 3))
-        default_pbc = gpu(zeros(Bool, 1, 3))
+        default_pbc = gpu(zeros(Bool, 3))
         default_shifts = gpu(compute_shifts(default_cell, default_pbc, cutoff))
 
         if has_cuaev
