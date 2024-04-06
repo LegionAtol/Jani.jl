@@ -12,27 +12,38 @@ function compute_shifts(cell::Array, pbc::Array{Bool}, cutoff::Float64)
     r1 = 1:num_repeats[1]
     r2 = 1:num_repeats[2]
     r3 = 1:num_repeats[3]
-    o = 0:0
+    o = [0]
+ 
+    # TODO: maybe to be refactored
+    prod1 = [(x, y, z) for x in r1, y in r2, z in r3]
+    prod2 = [(x, y, z) for x in r1, y in r2, z in o]
+    prod3 = [(x, y, z) for x in r1, y in r2, z in -r3]
+    prod4 = [(x, y, z) for x in r1, y in o, z in r3]
+    prod5 = [(x, y, z) for x in r1, y in o, z in o]
+    prod6 = [(x, y, z) for x in r1, y in o, z in -r3]
+    prod7 = [(x, y, z) for x in r1, y in -r2, z in r3]
+    prod8 = [(x, y, z) for x in r1, y in -r2, z in o]
+    prod9 = [(x, y, z) for x in r1, y in -r2, z in -r3]
+    prod10 = [(x, y, z) for x in o, y in r2, z in r3]
+    prod11 = [(x, y, z) for x in o, y in r2, z in o]
+    prod12 = [(x, y, z) for x in o, y in r2, z in -r3]
+    prod13 = [(x, y, z) for x in o, y in o, z in r3]
 
-    # Generating cartesian products
-    products = [
-        [(x, y, z) for x in r1, y in r2, z in r3],
-        [(x, y, z) for x in r1, y in r2, z in o],
-        [(x, y, z) for x in r1, y in r2, z in -r3],
-        [(x, y, z) for x in r1, y in o, z in r3],
-        [(x, y, z) for x in r1, y in o, z in o],
-        [(x, y, z) for x in r1, y in o, z in -r3],
-        [(x, y, z) for x in r1, y in -r2, z in r3],
-        [(x, y, z) for x in r1, y in -r2, z in o],
-        [(x, y, z) for x in r1, y in -r2, z in -r3],
-        [(x, y, z) for x in o, y in r2, z in r3],
-        [(x, y, z) for x in o, y in r2, z in o],
-        [(x, y, z) for x in o, y in r2, z in -r3],
-        [(x, y, z) for x in o, y in o, z in r3]
-    ]
-    # Flattening the array of arrays into a single array of tuples
-    shifts = vcat(products...)
+    prod_vcat1 = vcat(prod1...)
+    prod_vcat2 = vcat(prod2...)
+    prod_vcat3 = vcat(prod3...)
+    prod_vcat4 = vcat(prod4...)
+    prod_vcat5 = vcat(prod5...)
+    prod_vcat6 = vcat(prod6...)
+    prod_vcat7 = vcat(prod7...)
+    prod_vcat8 = vcat(prod8...)
+    prod_vcat9 = vcat(prod9...)
+    prod_vcat10 = vcat(prod10...)
+    prod_vcat11 = vcat(prod11...)
+    prod_vcat12 = vcat(prod12...)
+    prod_vcat13 = vcat(prod13...)
 
+    shifts = vcat(prod_vcat1,prod_vcat2,prod_vcat3,prod_vcat4,prod_vcat5,prod_vcat6,prod_vcat7,prod_vcat8,prod_vcat9,prod_vcat10,prod_vcat11,prod_vcat12,prod_vcat13)
     return shifts
 end
 
