@@ -78,7 +78,7 @@ mutable struct AEVComputer
     triu_index
     default_cell
     default_shifts
-    cuaev_computer
+    cuaev_computer::Union{Any, Nothing}
     cuaev_enabled::Bool
 
     function AEVComputer(;Rcr, Rca, EtaR, ShfR, EtaA, Zeta, ShfA, ShfZ, num_species, use_cuda_extension=false)
@@ -126,6 +126,8 @@ mutable struct AEVComputer
 
         if has_cuaev
             cuaev_computer= init_cuaev_computer()
+        else
+            cuaev_computer = nothing
         end
         cuaev_enabled = use_cuda_extension ? true : false
         
@@ -134,6 +136,8 @@ mutable struct AEVComputer
     end
 end
 
+
 function init_cuaev_computer()
+    # TODO: CUDA aev
     # return cuaev.CuaevComputer(self.Rcr, self.Rca, self.EtaR.flatten(), self.ShfR.flatten(), self.EtaA.flatten(), self.Zeta.flatten(), self.ShfA.flatten(), self.ShfZ.flatten(), self.num_species)
 end

@@ -71,9 +71,8 @@ function _from_neurochem_resources(info_file_path, periodic_table_index=false)
         kwargs[key] = value
     end
     aev_computer = AEVComputer(;kwargs...)
-
+    energy_shifter, sae_dict = load_sae(sae_file, return_dict=true)
     #=
-    energy_shifter, sae_dict = load_sae()
     species_to_tensor = consts.species_to_tensor
 
     network_dir = joinpath()

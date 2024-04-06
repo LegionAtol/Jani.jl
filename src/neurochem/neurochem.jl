@@ -68,7 +68,29 @@ Base.values(c::Constants) = [getfield(c, key) for key in keys(c)]
 
 Base.pairs(c::Constants) = [key => getfield(c, key) for key in keys(c)]
 
-function load_sae(filename::String, return_dict::Bool=false)
+function load_sae(filename::String; return_dict::Bool=false)
+    self_energies = []
+    d = OrderedDict{String, Float64}()
+
+    open(filename) do f
+        for line in eachline(f)
+            parts = strip.(split(line, '='))
+            species, index_str = strip.(split(parts[1], ','))
+            index = parse(Int, index_str)
+            value = parse(Float64, parts[2])
+            d[species] = value
+            push!(self_energies, (index, value))
+        end
+    end
+
+    # Ordina self_energies per index e estrai solo i valori
+    sorted_energies = map(x -> x[2], sort(self_energies, by=x->x[1]))
+
+    if return_dict
+    #    return EnergyShifter(sorted_energies), d
+    else
+    #    return EnergyShifter(sorted_energies)
+    end
 end
 
 function load_model(species::Vector{String}, dir_::String)
