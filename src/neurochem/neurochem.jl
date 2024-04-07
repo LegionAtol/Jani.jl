@@ -83,14 +83,22 @@ function load_sae(filename::String; return_dict::Bool=false)
         end
     end
 
-    # Ordina self_energies per index e estrai solo i valori
     sorted_energies = map(x -> x[2], sort(self_energies, by=x->x[1]))
 
     if return_dict
-    #    return EnergyShifter(sorted_energies), d
+        return EnergyShifter(sorted_energies), d
     else
-    #    return EnergyShifter(sorted_energies)
+        return EnergyShifter(sorted_energies)
     end
+end
+
+function load_model_ensemble(species::Vector{String}, prefix::String, count::Int)
+    models = []
+    for i in 0:(count - 1)  # start from 0
+        network_dir = joinpath(prefix * string(i), "networks")
+    #    push!(models, load_model(species, network_dir))
+    end
+    #return Ensemble(models)
 end
 
 function load_model(species::Vector{String}, dir_::String)

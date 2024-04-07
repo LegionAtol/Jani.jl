@@ -72,14 +72,10 @@ function _from_neurochem_resources(info_file_path, periodic_table_index=false)
     end
     aev_computer = AEVComputer(;kwargs...)
     energy_shifter, sae_dict = load_sae(sae_file, return_dict=true)
-    #=
     species_to_tensor = consts.species_to_tensor
+    neural_networks = load_model_ensemble(consts.species, ensemble_prefix, ensemble_size)
 
-    network_dir = joinpath()
-    neural_networks = load_model()
-
-    return BuiltinModel(species_converter, aev_computer, neural_networks, energy_shifter, species_to_tensor, consts, sae_dict, periodic_table_index, consts.species)
-    =#
+    #return BuiltinModel(species_converter, aev_computer, neural_networks, energy_shifter, species_to_tensor, consts, sae_dict, periodic_table_index, consts.species)
 end
 
 function Base.getindex(self::BuiltinModel, index::Int)

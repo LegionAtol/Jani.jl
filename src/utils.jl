@@ -1,22 +1,33 @@
 export ChemicalSymbolsToInts
 
 struct ChemicalSymbolsToInts
-    rev_species::Dict{String, Int}
-    #TODO: _dummy::Vector{Float64} or ::CuArray{Float32, 0} useful?
+    rev_species::OrderedDict{String, Int}
 
     function ChemicalSymbolsToInts(all_species::Vector{String})
-        rev_species = Dict(species => i-1 for (i, species) in enumerate(all_species)) # -1 is to start from 0 like in py
+        rev_species = OrderedDict{String, Int}()
+        for (i, species) in enumerate(all_species)
+            rev_species[species] = i - 1  # -1 is to start from 0 like in py
+        end
         new(rev_species)
     end
 end
 
-function forward(csi::ChemicalSymbolsToInts, species::Vector{String})
-    rev = [csi.rev_species[s] for s in species]
-    return convert(Vector{Int}, rev)
+struct EnergyShifter
+    self_energies::AbstractArray{Float64, 1}
+    fit_intercept::Bool
+
+    function EnergyShifter(self_energies::Array{Float64, 1}; fit_intercept=false)
+        new(gpu(self_energies), fit_intercept)
+    end
 end
 
 #=  Is a call method instead of forward() better?
 function (csi::ChemicalSymbolsToInts)(species::Vector{String})
+    rev = [csi.rev_species[s] for s in species]
+    return convert(Vector{Int}, rev)
+end
+
+function forward(csi::ChemicalSymbolsToInts, species::Vector{String})
     rev = [csi.rev_species[s] for s in species]
     return convert(Vector{Int}, rev)
 end
